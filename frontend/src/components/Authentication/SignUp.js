@@ -9,6 +9,15 @@ import {
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
+import { useToast } from "@chakra-ui/react";
+import axios from "axios";
+import ApiRoutes from "../../constants/ApiRoutes";
+import LocaltorageKeys from "../../constants/LocalStorageKeys";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+
+const cloudinaryUploadUrl = process.env.REACT_APP_CLOUDINARY_UPLOAD_URL;
+const cloudinaryCloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
+const cloudinaryUploadPreset = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
 
 const SignUp = () => {
   const [name, setName] = useState();
@@ -16,9 +25,13 @@ const SignUp = () => {
   const [password, setPassword] = useState();
   const [confirmPassword, setConfirmPassword] = useState();
   const [pic, setPic] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfrimPassword, setShowConfirmPassword] = useState(false);
+
+  const toast = useToast();
+  const history = useHistory();
 
   /**
    * Functions to toggle hiding of password
@@ -35,9 +48,80 @@ const SignUp = () => {
    * Functions to handle upload and submit
    */
 
-  const postDetails = (pic) => {};
+  const postDetails = (pic) => {
+    if (pic === undefined) {
+      throwToast("warning", "Please select an image");
+      return;
+    }
+    if (
+      pic.type === "image/jpeg" ||
+      pic.type === "image/jpg" ||
+      pic.type === "image/png"
+    ) {
+      const data = new FormData();
+      data.append("file", pic);
+      data.append("upload_preset", cloudinaryUploadPreset);
+      data.append("cloud_name", cloudinaryCloudName);
+      fetch(cloudinaryUploadUrl, {
+        method: "post",
+        body: data,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setPic(data.url.toString());
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          console.log(error);
+          setIsLoading(false);
+        });
+    } else {
+      throwToast("warning", "Please select a valid image (jpeg/png)");
+      setIsLoading(false);
+    }
+  };
 
-  const handleSubmit = () => {};
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    if (!name || !email || !password || !confirmPassword) {
+      throwToast("warning", "Please enter all the required fields");
+      setIsLoading(false);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      throwToast("warning", "Passwords do not match");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const { data } = await axios.post(ApiRoutes.signUp, {
+        name,
+        email,
+        password,
+        pic,
+      });
+
+      throwToast("success", "Registraion successful");
+      setIsLoading(false);
+
+      localStorage.setItem(LocaltorageKeys.userInfo, JSON.stringify(data));
+      history.push("/chats");
+    } catch (e) {
+      throwToast("error", "Signing Up Failed. Please try again later");
+      setIsLoading(false);
+    }
+  };
+
+  const throwToast = (status, message) => {
+    toast({
+      title: message,
+      status: status,
+      duration: 5000,
+      isClosable: true,
+    });
+  };
 
   return (
     <VStack spacing={"5px"}>
@@ -117,6 +201,7 @@ const SignUp = () => {
         width={"100%"}
         style={{ marginTop: 15 }}
         onClick={handleSubmit}
+        isLoading={isLoading}
       >
         Sign Up
       </Button>

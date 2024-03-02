@@ -9,12 +9,21 @@ import {
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
+import { useToast } from "@chakra-ui/react";
+import axios from "axios";
+import ApiRoutes from "../../constants/ApiRoutes";
+import LocaltorageKeys from "../../constants/LocalStorageKeys";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
 const LogIn = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
+
+  const toast = useToast();
+  const history = useHistory();
 
   /**
    * Functions to toggle hiding of password
@@ -23,13 +32,47 @@ const LogIn = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleSubmit = () => {};
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    if (!email || !password) {
+      throwToast("warning", "Please enter all the required fields");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const { data } = await axios.post(ApiRoutes.login, {
+        email,
+        password,
+      });
+
+      throwToast("success", "Login successful");
+      setIsLoading(false);
+
+      localStorage.setItem(LocaltorageKeys.userInfo, JSON.stringify(data));
+      history.push("/chats");
+    } catch (e) {
+      throwToast("error", "Logging In Failed", e.response.data.message);
+      setIsLoading(false);
+    }
+  };
+
+  const throwToast = (status, message, description) => {
+    toast({
+      title: message,
+      status: status,
+      duration: 5000,
+      isClosable: true,
+      description: description ?? "",
+    });
+  };
 
   return (
     <VStack spacing={"5px"}>
       <FormControl id="email" isRequired>
         <FormLabel>Email</FormLabel>
         <Input
+          value={email}
           placeholder="Enter your email"
           onChange={(e) => {
             setEmail(e.target.value);
@@ -40,6 +83,7 @@ const LogIn = () => {
         <FormLabel>Password</FormLabel>
         <InputGroup size={"md"}>
           <Input
+            value={password}
             type={showPassword ? "text" : "password"}
             placeholder="Enter your password"
             onChange={(e) => {

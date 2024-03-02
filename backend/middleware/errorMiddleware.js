@@ -1,3 +1,9 @@
+function notFound(req, res, next) {
+  const error = new Error(`Page Not Found ${req.originalUrl}`);
+  res.status(404);
+  next(error);
+}
+
 function errorMiddleware(err, req, res, next) {
   res.status(res.statusCode ?? 500);
   res.json({
@@ -6,4 +12,4 @@ function errorMiddleware(err, req, res, next) {
   });
 }
 
-module.exports = errorMiddleware;
+module.exports = { errorMiddleware, notFound };

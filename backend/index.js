@@ -1,6 +1,8 @@
 const express = require("express");
+const cors = require("cors");
 require("dotenv").config();
 const connectDB = require("./services/mongoDbService");
+const { notFound, errorMiddleware } = require("./middleware/errorMiddleware");
 
 connectDB();
 
@@ -8,10 +10,11 @@ connectDB();
 const app = express();
 const PORT = process.env.PORT;
 const api = require("./routes");
-const errorMiddleware = require("./middleware/errorMiddleware"); //Used to throw proper error response
+//Used to throw proper error response
 
 //MiddleWares
 app.use(express.json());
+app.use(cors());
 
 //Routes
 app.use("/api", api);
@@ -22,6 +25,7 @@ app.get("/", (req, res) => {
   });
 });
 
+app.use(notFound);
 app.use(errorMiddleware);
 
 app.listen(PORT, () => {
