@@ -45,12 +45,12 @@ const LogIn = () => {
         email,
         password,
       });
+      history.push("/chats");
 
       throwToast("success", "Login successful");
       setIsLoading(false);
 
       localStorage.setItem(LocaltorageKeys.userInfo, JSON.stringify(data));
-      history.push("/chats");
     } catch (e) {
       throwToast("error", "Logging In Failed", e.response.data.message);
       setIsLoading(false);

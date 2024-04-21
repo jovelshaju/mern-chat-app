@@ -39,8 +39,10 @@ const accessChat = asyncHandler(async (req, res) => {
     if (isChat.length > 0) {
       res.status(200).send(isChat[0]);
     } else {
+      const user = await UserDB.find({ _id: { $eq: req.user._id } });
+
       const newChatRequest = {
-        chatName: "sender",
+        chatName: user[0].name,
         isGroupChat: false,
         users: [req.user._id, userId],
       };

@@ -49,6 +49,7 @@ const SignUp = () => {
    */
 
   const postDetails = (pic) => {
+    setIsLoading(true);
     if (pic === undefined) {
       throwToast("warning", "Please select an image");
       return;
@@ -68,8 +69,14 @@ const SignUp = () => {
       })
         .then((res) => res.json())
         .then((data) => {
-          setPic(data.url.toString());
-          setIsLoading(false);
+          if (data.error) {
+            throwToast("error", "Upload Failed");
+            console.log(data.error);
+            setIsLoading(false);
+          } else {
+            setPic(data.url.toString());
+            setIsLoading(false);
+          }
         })
         .catch((error) => {
           console.log(error);
@@ -102,12 +109,12 @@ const SignUp = () => {
         password,
         pic,
       });
+      history.push("/chats");
 
       throwToast("success", "Registraion successful");
       setIsLoading(false);
 
       localStorage.setItem(LocaltorageKeys.userInfo, JSON.stringify(data));
-      history.push("/chats");
     } catch (e) {
       throwToast("error", "Signing Up Failed. Please try again later");
       setIsLoading(false);

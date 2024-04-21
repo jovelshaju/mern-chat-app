@@ -1,4 +1,6 @@
-import React from "react";
+import { React, useEffect } from "react";
+import LocaltorageKeys from "../constants/LocalStorageKeys";
+import { useHistory } from "react-router-dom";
 import {
   Box,
   Container,
@@ -13,6 +15,14 @@ import LogIn from "../components/Authentication/LogIn";
 import SignUp from "../components/Authentication/SignUp";
 
 const HomePage = () => {
+  const history = useHistory();
+  useEffect(() => {
+    const userInfo = JSON.parse(localStorage.getItem(LocaltorageKeys.userInfo));
+    if (userInfo) {
+      history.push("/chats");
+    }
+  }, [history]);
+
   return (
     <Container maxW="xl" centerContent>
       <Box
