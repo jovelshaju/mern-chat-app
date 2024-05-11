@@ -4,14 +4,16 @@ import { AddIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import { ChatState } from "../../context/ChatProvider";
 import ApiRoutes from "../../constants/ApiRoutes";
+import CreateGroupModal from "../Miscellaneous/CreateGroupModal";
 
-const MyChats = () => {
+const MyChats = ({ fetchChats }) => {
   const toast = useToast();
-  const { user, selectedChat, setSelectedChat, chats, setChats } = ChatState();
+  const { user, setUser, selectedChat, setSelectedChat, chats, setChats } =
+    ChatState();
   const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchChats = async () => {
+    const fetchAllChats = async () => {
       try {
         const config = {
           headers: {
@@ -34,8 +36,8 @@ const MyChats = () => {
         });
       }
     };
-    fetchChats();
-  });
+    fetchAllChats();
+  }, [setChats, toast, user.token, fetchChats]);
 
   return (
     <Box
@@ -59,13 +61,15 @@ const MyChats = () => {
         width={"100%"}
       >
         My Chats
-        <Button
-          display={"flex"}
-          fontSize={{ base: "17px", md: "10px", lg: "17px" }}
-          rightIcon={<AddIcon />}
-        >
-          New Group Chat
-        </Button>
+        <CreateGroupModal>
+          <Button
+            display={"flex"}
+            fontSize={{ base: "17px", md: "10px", lg: "17px" }}
+            rightIcon={<AddIcon />}
+          >
+            New Group Chat
+          </Button>
+        </CreateGroupModal>
       </Box>
       <Box
         display={"flex"}
@@ -83,7 +87,7 @@ const MyChats = () => {
           </Stack>
         ) : (
           <Stack overflowY={"scroll"}>
-            {chats.map((chat) => (
+            {chats?.map((chat) => (
               <Box
                 onClick={() => setSelectedChat(chat)}
                 cursor={"pointer"}

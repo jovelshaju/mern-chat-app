@@ -14,6 +14,7 @@ import axios from "axios";
 import ApiRoutes from "../../constants/ApiRoutes";
 import LocaltorageKeys from "../../constants/LocalStorageKeys";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import { ChatState } from "../../context/ChatProvider";
 
 const LogIn = () => {
   const [email, setEmail] = useState();
@@ -24,6 +25,8 @@ const LogIn = () => {
 
   const toast = useToast();
   const history = useHistory();
+
+  const { setUser } = ChatState();
 
   /**
    * Functions to toggle hiding of password
@@ -51,6 +54,7 @@ const LogIn = () => {
       setIsLoading(false);
 
       localStorage.setItem(LocaltorageKeys.userInfo, JSON.stringify(data));
+      setUser(JSON.parse(localStorage.getItem(LocaltorageKeys.userInfo)));
     } catch (e) {
       throwToast("error", "Logging In Failed", e.response.data.message);
       setIsLoading(false);

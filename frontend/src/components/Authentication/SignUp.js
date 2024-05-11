@@ -14,6 +14,7 @@ import axios from "axios";
 import ApiRoutes from "../../constants/ApiRoutes";
 import LocaltorageKeys from "../../constants/LocalStorageKeys";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import { ChatState } from "../../context/ChatProvider";
 
 const cloudinaryUploadUrl = process.env.REACT_APP_CLOUDINARY_UPLOAD_URL;
 const cloudinaryCloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
@@ -29,6 +30,8 @@ const SignUp = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfrimPassword, setShowConfirmPassword] = useState(false);
+
+  const { setUser } = ChatState();
 
   const toast = useToast();
   const history = useHistory();
@@ -115,6 +118,7 @@ const SignUp = () => {
       setIsLoading(false);
 
       localStorage.setItem(LocaltorageKeys.userInfo, JSON.stringify(data));
+      setUser(JSON.parse(localStorage.getItem(LocaltorageKeys.userInfo)));
     } catch (e) {
       throwToast("error", "Signing Up Failed. Please try again later");
       setIsLoading(false);

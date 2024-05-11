@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ChatState } from "../context/ChatProvider";
 import { Box } from "@chakra-ui/react";
 import Header from "../components/Miscellaneous/Header";
@@ -7,6 +7,8 @@ import ChatBox from "../components/Chat/ChatBox";
 
 const ChatPage = () => {
   const { user } = ChatState();
+
+  const [fetchChats, setFetchChats] = useState(false);
 
   return (
     <div style={{ width: "100%" }}>
@@ -18,8 +20,8 @@ const ChatPage = () => {
         w={"100%"}
         p={"10px"}
       >
-        {user && <MyChats />}
-        {user && <ChatBox />}
+        {user && <MyChats fetchChats={fetchChats} />}
+        {user && <ChatBox setFetchChats={setFetchChats} />}
       </Box>
     </div>
   );

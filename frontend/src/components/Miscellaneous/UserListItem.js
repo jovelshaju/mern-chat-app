@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Avatar, Text } from "@chakra-ui/react";
 
-const ChatTile = ({ user, onClick }) => {
+const UserListItem = ({ user, onClick }) => {
   return (
     <Box
       onClick={onClick}
@@ -38,4 +38,4 @@ const ChatTile = ({ user, onClick }) => {
   );
 };
 
-export default ChatTile;
+export default UserListItem;

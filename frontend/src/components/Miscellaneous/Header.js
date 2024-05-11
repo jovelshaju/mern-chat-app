@@ -19,12 +19,13 @@ import LocaltorageKeys from "../../constants/LocalStorageKeys";
 import SideDrawer from "./SideDrawer";
 
 const Header = () => {
-  const { user } = ChatState();
+  const { user, setUser } = ChatState();
   const history = useHistory();
 
   const logOutHandler = () => {
     history.push("/");
     localStorage.removeItem(LocaltorageKeys.userInfo);
+    setUser(null);
   };
   return (
     <>

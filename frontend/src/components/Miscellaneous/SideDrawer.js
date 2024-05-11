@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import ApiRoutes from "../../constants/ApiRoutes";
-import ChatTile from "../Chat/ChatTile";
+import UserListItem from "../Miscellaneous/UserListItem";
 import { ChatState } from "../../context/ChatProvider";
 
 const SideDrawer = ({ user, children }) => {
@@ -88,10 +88,20 @@ const SideDrawer = ({ user, children }) => {
       });
     }
   };
+
+  /**
+   * Function to handle closing of Modal
+   */
+  const handleClose = () => {
+    setSearch("");
+    setSearchResult([]);
+    onClose();
+  };
+
   return (
     <>
       <span onClick={onOpen}>{children}</span>
-      <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
+      <Drawer isOpen={isOpen} placement="left" onClose={handleClose}>
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
@@ -110,7 +120,7 @@ const SideDrawer = ({ user, children }) => {
               </Stack>
             ) : (
               searchResult?.map((userData) => (
-                <ChatTile
+                <UserListItem
                   key={userData._id}
                   user={userData}
                   onClick={() => accesChat(userData._id)}
